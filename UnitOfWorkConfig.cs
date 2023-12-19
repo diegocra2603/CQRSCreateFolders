@@ -9,7 +9,7 @@ public class UnitOfWorkConfig
     }
     
     public string FieldUnitOfWork => (_end == "Command" ) ? "\n    private readonly IUnitOfWork _unitOfWork;" : "";
-    public string ParamUnitOfWork => (_end == "Command" ) ? ", IUnitOfWork unitOfWork" : "";
+    public string ParamUnitOfWork => (_end == "Command" ) ? ",\n        IUnitOfWork unitOfWork" : "";
     public string UsingUnitOfWork => (_end == "Command" ) ? "\nusing Domain.Primitives;" : "";
     public string AssignUntiOfWork => (_end == "Command" ) ? "\n        _unitOfWork = unitOfWork;" : "";
 }

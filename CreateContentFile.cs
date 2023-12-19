@@ -31,34 +31,61 @@ public class CreateContentFile
 
         var unitOfWork = new UnitOfWorkConfig(_end);
         var _fileNamespaceSlit = _fileNamespace.Split(".");
+        var selectAllConfig = new SelectAllConfig(_nameFile, _fileNamespaceSlit[2]);
+        var selectbyIdConfig = new SelectByIdConfig(_nameFile);
+        var response = _start.Contains("SelectAll") ? selectAllConfig.IRequestResponse : $"ErrorOr<{_nameFile}DTO>";
+        
+        string content = $"throw new NotImplementedException();";
+        string strAsync = " ";
 
+        if(_start.Contains("SelectAll"))
+        {
+            content = selectAllConfig.ContentHandler;
+            strAsync = " async ";
+        } 
+        else if (_start.Contains("SelectById")) 
+        {
+            content = selectbyIdConfig.ContentHandler;
+            strAsync = " async ";
+        }
+    
         return $$"""
         using {{_fileNamespace}}.DTOs;
         using Domain.Contracts.Persistence;
         using Domain.Entities.{{_fileNamespaceSlit[2]}};{{unitOfWork.UsingUnitOfWork}}
+        using AutoMapper;
         using ErrorOr;
         using MediatR;
 
         namespace {{_fileNamespace}}.{{_start}};
 
-        public sealed class {{_start}}{{_nameFile}}{{_end}}Handler : IRequestHandler<{{_start}}{{_nameFile}}{{_end}}, ErrorOr<{{_nameFile}}DTO>>
+        public sealed class {{_start}}{{_nameFile}}{{_end}}Handler : IRequestHandler<{{_start}}{{_nameFile}}{{_end}}, {{response}}>
         {
-            private readonly IAsyncRepository<{{_nameFile}}> _{{_nameFile}}Repository;{{unitOfWork.FieldUnitOfWork}}
+            private readonly IAsyncRepository<{{_nameFile}}> _{{_nameFile.FirstCharLower()}}Repository;
+            private readonly IMapper _mapper;{{unitOfWork.FieldUnitOfWork}}
 
-            public {{_start}}{{_nameFile}}{{_end}}Handler(IAsyncRepository<{{_nameFile}}> {{_nameFile}}Repository {{unitOfWork.ParamUnitOfWork}} )
+            public {{_start}}{{_nameFile}}{{_end}}Handler(
+                IAsyncRepository<{{_nameFile}}> {{_nameFile.FirstCharLower()}}Repository,
+                IMapper mapper{{unitOfWork.ParamUnitOfWork}})
             {
-                _{{_nameFile}}Repository = {{_nameFile}}Repository;{{unitOfWork.AssignUntiOfWork}}
+                _{{_nameFile.FirstCharLower()}}Repository = {{_nameFile.FirstCharLower()}}Repository;
+                _mapper = mapper;{{unitOfWork.AssignUntiOfWork}}
             }
 
-            public Task<ErrorOr<{{_nameFile}}DTO>> Handle({{_start}}{{_nameFile}}{{_end}} request, CancellationToken cancellationToken)
+            public{{strAsync}}Task<{{response}}> Handle({{_start}}{{_nameFile}}{{_end}} request, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                {{content}}
             }
         }
         """;
     }
 
     public string CreateCommand(){
+        var _fileNamespaceSlit = _fileNamespace.Split(".");
+        var selectAllConfig = new SelectAllConfig(_nameFile, _fileNamespaceSlit[2]);
+        var response = _start.Contains("SelectAll") ? selectAllConfig.IRequestResponse : $"ErrorOr<{_nameFile}DTO>";
+        var contentCommand = _start.Contains("SelectById") || _start.Contains("Delete") ? "\n        Guid Id" : "";
+
         return $$"""
         using {{_fileNamespace}}.DTOs;
         using ErrorOr;
@@ -66,7 +93,7 @@ public class CreateContentFile
 
         namespace {{_fileNamespace}}.{{_start}};
 
-        public partial record {{_start}}{{_nameFile}}{{_end}}() : IRequest<ErrorOr<{{_nameFile}}DTO>>;
+        public partial record {{_start}}{{_nameFile}}{{_end}}({{contentCommand}}) : IRequest<{{response}}>;
         """;
     }
 
@@ -87,7 +114,10 @@ public class CreateContentFile
         return $$"""
         namespace {{_fileNamespace}}.DTOs;
 
-        public record {{_nameFile}}DTO();  
+        public sealed class {{_nameFile}}DTO
+        {
+             
+        }  
         """;
     }
 }

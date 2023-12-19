@@ -38,9 +38,9 @@ public static class SchemesToCreate
         ),
         new SchemeDirectory("SelectBy",
         [
-            new SchemeFile("cs","SelectBy","Query", TypeFile.Command,"Query"),
-            new SchemeFile("cs","SelectBy","Query", TypeFile.Handler,"QueryHandler"),
-            new SchemeFile("cs","SelectBy","Query", TypeFile.Validation,"QueryValidation"),
+            new SchemeFile("cs","SelectById","Query", TypeFile.Command,"Query"),
+            new SchemeFile("cs","SelectById","Query", TypeFile.Handler,"QueryHandler"),
+            new SchemeFile("cs","SelectById","Query", TypeFile.Validation,"QueryValidation"),
         ]
         )
     ];

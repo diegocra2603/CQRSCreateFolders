@@ -1,5 +1,3 @@
-using System.ComponentModel.Design;
-
 namespace CQRSCreateFolders;
 
 public class CreateContentFile
@@ -30,8 +28,14 @@ public class CreateContentFile
     }
 
     public string CreateHandler(){
+
+        var unitOfWork = new UnitOfWorkConfig(_end);
+        var _fileNamespaceSlit = _fileNamespace.Split(".");
+
         return $$"""
         using {{_fileNamespace}}.DTOs;
+        using Domain.Contracts.Persistence;
+        using Domain.Entities.{{_fileNamespaceSlit[2]}};{{unitOfWork.UsingUnitOfWork}}
         using ErrorOr;
         using MediatR;
 
@@ -39,6 +43,13 @@ public class CreateContentFile
 
         public sealed class {{_start}}{{_nameFile}}{{_end}}Handler : IRequestHandler<{{_start}}{{_nameFile}}{{_end}}, ErrorOr<{{_nameFile}}DTO>>
         {
+            private readonly IAsyncRepository<{{_nameFile}}> _{{_nameFile}}Repository;{{unitOfWork.FieldUnitOfWork}}
+
+            public {{_start}}{{_nameFile}}{{_end}}Handler(IAsyncRepository<{{_nameFile}}> {{_nameFile}}Repository {{unitOfWork.ParamUnitOfWork}} )
+            {
+                _{{_nameFile}}Repository = {{_nameFile}}Repository;{{unitOfWork.AssignUntiOfWork}}
+            }
+
             public Task<ErrorOr<{{_nameFile}}DTO>> Handle({{_start}}{{_nameFile}}{{_end}} request, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();

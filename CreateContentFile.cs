@@ -33,7 +33,18 @@ public class CreateContentFile
         var _fileNamespaceSlit = _fileNamespace.Split(".");
         var selectAllConfig = new SelectAllConfig(_nameFile, _fileNamespaceSlit[2]);
         var selectbyIdConfig = new SelectByIdConfig(_nameFile);
-        var response = _start.Contains("SelectAll") ? selectAllConfig.IRequestResponse : $"ErrorOr<{_nameFile}DTO>";
+        var deleteConfig = new DeleteConfig(_nameFile);
+
+        var response = $"ErrorOr<{_nameFile}DTO>";
+
+        if(_start.Contains("SelectAll")) 
+        {
+            response = selectAllConfig.IRequestResponse;
+
+        }  else if (_start.Contains("Delete") || _start.Contains("Update")) 
+        {
+            response = deleteConfig.IRequestResponse;
+        }
         
         string content = $"throw new NotImplementedException();";
         string strAsync = " ";
@@ -46,6 +57,11 @@ public class CreateContentFile
         else if (_start.Contains("SelectById")) 
         {
             content = selectbyIdConfig.ContentHandler;
+            strAsync = " async ";
+        }
+        else if (_start.Contains("Delete")) 
+        {
+            content = deleteConfig.ContentHandler;
             strAsync = " async ";
         }
     
@@ -83,7 +99,19 @@ public class CreateContentFile
     public string CreateCommand(){
         var _fileNamespaceSlit = _fileNamespace.Split(".");
         var selectAllConfig = new SelectAllConfig(_nameFile, _fileNamespaceSlit[2]);
-        var response = _start.Contains("SelectAll") ? selectAllConfig.IRequestResponse : $"ErrorOr<{_nameFile}DTO>";
+
+        var response = $"ErrorOr<{_nameFile}DTO>";
+        var deleteConfig = new DeleteConfig(_nameFile);
+
+        if(_start.Contains("SelectAll")) 
+        {
+            response = selectAllConfig.IRequestResponse;
+            
+        }  else if (_start.Contains("Delete") || _start.Contains("Update")) 
+        {
+            response = deleteConfig.IRequestResponse;
+        }
+        
         var contentCommand = _start.Contains("SelectById") || _start.Contains("Delete") ? "\n        Guid Id" : "";
 
         return $$"""

@@ -29,7 +29,7 @@ public class CreateContentFile
 
     public string CreateHandler(){
 
-        var unitOfWork = new UnitOfWorkConfig(_end);
+        var unitOfWork = new UnitOfWorkConfig();
         var _fileNamespaceSlit = _fileNamespace.Split(".");
         var selectAllConfig = new SelectAllConfig(_nameFile, _fileNamespaceSlit[2]);
         var selectbyIdConfig = new SelectByIdConfig(_nameFile);

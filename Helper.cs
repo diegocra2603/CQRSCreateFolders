@@ -6,4 +6,16 @@ public static class Helper
     {
         return char.ToLower(input[0]) + input.Substring(1);
     }
+
+    public static string ArrayToString(this string[] values)
+    {
+        var value = "";
+
+        foreach (var item in values)
+        {
+            value += item;
+        }
+
+        return value;
+    }
 }
